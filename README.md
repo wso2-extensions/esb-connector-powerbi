@@ -1,5 +1,5 @@
 # esb-connector-powerbi
-The PostCodeLookup connector allows you to access the PostCodeLookup REST API through WSO2 ESB. The Postcode lookup connector allows you to access the Postcode lookup REST API through WSO2 ESB.
+The Power BI connector allows you to access the Power BI REST API through WSO2 ESB. Power BI is Microsoft's cloud based business intelligence solution that works from within Microsoft Excel and Office 365 to analyze and visualize data in a self-service way. The BI solution is designed to help business users gain insight from their data
 
 ###Build
 mvn clean install
