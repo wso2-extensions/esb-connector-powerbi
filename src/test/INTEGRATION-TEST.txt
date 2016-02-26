@@ -46,17 +46,13 @@ Steps to follow in setting integration test.
       /_system/governance/connectors/PowerBI/refreshToken
 
  
- 4. Compress modified ESB as wso2esb-4.9.0.zip and copy that zip file in to location "{ESB_CONNECTOR_HOME}/repository/".
+ 4. Compress modified ESB as wso2esb-4.9.0.zip and copy that zip file in to location "{POWERBI_CONNECTOR_HOME}/repository/".
  
- 5. Make sure that PowerBI is specified as a module in ESB Connector Parent pom.
-
-    <module>powerbi/powerbi-connector/powerbi-connector-1.0.0/org.wso2.carbon.connector</module>
- 
- 6. Update the powerbi properties file at location "<POWERBI_CONNECTOR_HOME>/src/test/resources/artifacts/ESB/connector/config" as below.
+ 5. Update the powerbi properties file at location "<POWERBI_CONNECTOR_HOME>/src/test/resources/artifacts/ESB/connector/config" as below.
 
    i)   apiUrl             -  The API URL of Power BI (e.g. https://api.powerbi.com)
    ii)  authorizationCode  -  Authorization code for genarating the access token which is genarated in step (3. viii).
    iii) datasetName        -  Dataset name which is created in step (3. iv).
 
- 7. Navigate to "<ESB_CONNECTOR_HOME>/" and run the following command.
+ 6. Navigate to "<POWERBI_CONNECTOR_HOME>/" and run the following command.
      $ mvn clean install
