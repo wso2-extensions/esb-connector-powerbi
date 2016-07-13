@@ -17,10 +17,11 @@
   ~  under the License.
   -->
 <component name="powerbi-group" type="synapse/template">
-   <subComponents>
-      <component name="listGroups">
-         <file>listGroups.xml</file>
-         <description>Returns a JSON list of all Groups that the signed in user is a member of.</description>
-      </component>
-   </subComponents>
+    <subComponents>
+        <component name="listGroups">
+            <file>listGroups.xml</file>
+            <description>Returns a JSON list of all Groups that the signed in user is a member of.
+            </description>
+        </component>
+    </subComponents>
 </component>

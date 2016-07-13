@@ -17,22 +17,23 @@
   ~  under the License.
   -->
 <component name="powerbi-table" type="synapse/template">
-   <subComponents>
-      <component name="listTables">
-         <file>listTables.xml</file>
-         <description>Returns a JSON list of Tables for the specified Dataset.</description>
-      </component>
-      <component name="listGroupTables">
-         <file>listGroupTables.xml</file>
-         <description>Returns a JSON list of Tables for the specified Dataset and Group.</description>
-      </component>
-      <component name="updateTableSchema">
-         <file>updateTableSchema.xml</file>
-         <description>Updates a Table schema for the specified Dataset.</description>
-      </component>
-      <component name="updateGroupTableSchema">
-         <file>updateGroupTableSchema.xml</file>
-         <description>Updates a Table schema for the specified Dataset and Group.</description>
-      </component>
-   </subComponents>
+    <subComponents>
+        <component name="listTables">
+            <file>listTables.xml</file>
+            <description>Returns a JSON list of Tables for the specified Dataset.</description>
+        </component>
+        <component name="listGroupTables">
+            <file>listGroupTables.xml</file>
+            <description>Returns a JSON list of Tables for the specified Dataset and Group.
+            </description>
+        </component>
+        <component name="updateTableSchema">
+            <file>updateTableSchema.xml</file>
+            <description>Updates a Table schema for the specified Dataset.</description>
+        </component>
+        <component name="updateGroupTableSchema">
+            <file>updateGroupTableSchema.xml</file>
+            <description>Updates a Table schema for the specified Dataset and Group.</description>
+        </component>
+    </subComponents>
 </component>

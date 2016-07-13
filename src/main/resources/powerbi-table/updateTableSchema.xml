@@ -18,47 +18,50 @@
   -->
 <!-- Method Documentation URL:https://msdn.microsoft.com/en-us/library/mt203560.aspx -->
 <template name="updateTableSchema" xmlns="http://ws.apache.org/ns/synapse">
-   <parameter name="datasetId" description="Guid of the Dataset to use." />
-   <parameter name="tableName" description="Name of Table in the Dataset." />
-   <parameter name="columns" description="Array of JSON objects which contains column name and column type." />
-   <sequence>
-      <property name="uri.var.datasetId" expression="$func:datasetId" />
-      <property name="uri.var.tableName" expression="$func:tableName" />
-      <property name="uri.var.columns" expression="$func:columns" />
-      <payloadFactory media-type="json">
-         <format>
-            {
-            "name": "$1",
-            "columns": $2
-            }
-         </format>
-         <args>
-            <arg expression="get-property('uri.var.tableName')" />
-            <arg expression="get-property('uri.var.columns')" />
-         </args>
-      </payloadFactory>
-      <call>
-         <endpoint>
-            <http method="put" uri-template="{+uri.var.apiUrl}/datasets/{+uri.var.datasetId}/tables/{+uri.var.tableName}" />
-         </endpoint>
-      </call>
-      <property name="uri.var.statusCode" expression="$axis2:HTTP_SC" />
-      <!-- If the call fails with 403 Unauthorized, then get a new access token by calling getAccessTokenFromRefreshToken
-         method. -->
-      <filter xpath="get-property('uri.var.statusCode') = 403 and get-property('uri.var.refreshTokenNegotiated') = 'false'">
-         <then>
-            <powerbi.getAccessTokenFromRefreshToken />
-            <header name="Authorization" expression="fn:concat('Bearer ', get-property('uri.var.accessToken'))"
-               scope="transport" />
-            <powerbi.listTables />
-         </then>
-      </filter>
-      <!-- Remove custom Headers from the API Response -->
-      <header name="X-Frame-Options" action="remove" scope="transport" />
-      <header name="Strict-Transport-Security" action="remove" scope="transport" />
-      <header name="RequestId" action="remove" scope="transport" />
-      <header name="X-Content-Type-Options" action="remove" scope="transport" />
-      <header name="OData-Version" action="remove" scope="transport" />
-      <header name="Cache-Control" action="remove" scope="transport" />
-   </sequence>
+    <parameter name="datasetId" description="Guid of the Dataset to use."/>
+    <parameter name="tableName" description="Name of Table in the Dataset."/>
+    <parameter name="columns"
+               description="Array of JSON objects which contains column name and column type."/>
+    <sequence>
+        <property name="uri.var.datasetId" expression="$func:datasetId"/>
+        <property name="uri.var.tableName" expression="$func:tableName"/>
+        <property name="uri.var.columns" expression="$func:columns"/>
+        <payloadFactory media-type="json">
+            <format>
+                {
+                "name": "$1",
+                "columns": $2
+                }
+            </format>
+            <args>
+                <arg expression="get-property('uri.var.tableName')"/>
+                <arg expression="get-property('uri.var.columns')"/>
+            </args>
+        </payloadFactory>
+        <call>
+            <endpoint>
+                <http method="put"
+                      uri-template="{+uri.var.apiUrl}/datasets/{+uri.var.datasetId}/tables/{+uri.var.tableName}"/>
+            </endpoint>
+        </call>
+        <property name="uri.var.statusCode" expression="$axis2:HTTP_SC"/>
+        <!-- If the call fails with 403 Unauthorized, then get a new access token by calling getAccessTokenFromRefreshToken
+           method. -->
+        <filter xpath="get-property('uri.var.statusCode') = 403 and get-property('uri.var.refreshTokenNegotiated') = 'false'">
+            <then>
+                <powerbi.getAccessTokenFromRefreshToken/>
+                <header name="Authorization"
+                        expression="fn:concat('Bearer ', get-property('uri.var.accessToken'))"
+                        scope="transport"/>
+                <powerbi.listTables/>
+            </then>
+        </filter>
+        <!-- Remove custom Headers from the API Response -->
+        <header name="X-Frame-Options" action="remove" scope="transport"/>
+        <header name="Strict-Transport-Security" action="remove" scope="transport"/>
+        <header name="RequestId" action="remove" scope="transport"/>
+        <header name="X-Content-Type-Options" action="remove" scope="transport"/>
+        <header name="OData-Version" action="remove" scope="transport"/>
+        <header name="Cache-Control" action="remove" scope="transport"/>
+    </sequence>
 </template>

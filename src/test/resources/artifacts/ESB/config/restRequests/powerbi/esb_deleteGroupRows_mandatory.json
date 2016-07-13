@@ -1,6 +1,6 @@
 {
-     "apiUrl": "%s(apiUrl)",
-     "datasetId" : "%s(groupDatasetId)",
-     "groupId" : "%s(groupId)",
-     "tableName" : "Product"
+  "apiUrl": "%s(apiUrl)",
+  "datasetId": "%s(groupDatasetId)",
+  "groupId": "%s(groupId)",
+  "tableName": "Product"
 }

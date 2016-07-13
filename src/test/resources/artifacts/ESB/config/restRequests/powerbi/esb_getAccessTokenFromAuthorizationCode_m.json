@@ -1,5 +1,4 @@
 {
-
-	"authorizationCode":"%s(authorizationCode)",
-	"resource":"https://analysis.windows.net/powerbi/api"
+  "authorizationCode": "%s(authorizationCode)",
+  "resource": "https://analysis.windows.net/powerbi/api"
 }

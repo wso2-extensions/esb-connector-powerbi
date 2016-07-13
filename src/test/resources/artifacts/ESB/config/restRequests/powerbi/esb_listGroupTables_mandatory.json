@@ -1,5 +1,5 @@
 {
-   "apiUrl": "%s(apiUrl)",
-   "datasetId" : "%s(groupDatasetId)",
-   "groupId" : "%s(groupId)"
+  "apiUrl": "%s(apiUrl)",
+  "datasetId": "%s(groupDatasetId)",
+  "groupId": "%s(groupId)"
 }
