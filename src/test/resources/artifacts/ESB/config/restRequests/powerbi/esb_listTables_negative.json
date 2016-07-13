@@ -1,4 +1,4 @@
 {
-   "apiUrl": "%s(apiUrl)",
-   "datasetId" : "INVALID"
+  "apiUrl": "%s(apiUrl)",
+  "datasetId": "INVALID"
 }

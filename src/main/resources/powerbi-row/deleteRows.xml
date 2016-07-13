@@ -18,39 +18,41 @@
   -->
 <!-- Method Documentation URL:https://msdn.microsoft.com/en-us/library/mt238041.aspx -->
 <template name="deleteRows" xmlns="http://ws.apache.org/ns/synapse">
-   <parameter name="datasetId" description="Guid of the Dataset to use." />
-   <parameter name="tableName" description="Name of Table in the Dataset." />
-   <sequence>
-      <property name="uri.var.datasetId" expression="$func:datasetId" />
-      <property name="uri.var.tableName" expression="$func:tableName" />
-      <!-- Remove Accept-Encoding header only if it is gzip, to avoid java.io.EOFException. JIRA issue: https://wso2.org/jira/browse/ESBJAVA-2575 -->
-      <filter source="get-property('transport','Accept-Encoding')" regex=".*gzip.*">
-         <then>
-            <header name="Accept-Encoding" action="remove" scope="transport" />
-         </then>
-      </filter>
-      <call>
-         <endpoint>
-            <http method="delete" uri-template="{+uri.var.apiUrl}/datasets/{+uri.var.datasetId}/tables/{+uri.var.tableName}/rows" />
-         </endpoint>
-      </call>
-      <property name="uri.var.statusCode" expression="$axis2:HTTP_SC" />
-      <!-- If the call fails with 403 Unauthorized, then get a new access token by calling getAccessTokenFromRefreshToken
-         method. -->
-      <filter xpath="get-property('uri.var.statusCode') = 403 and get-property('uri.var.refreshTokenNegotiated') = 'false'">
-         <then>
-            <powerbi.getAccessTokenFromRefreshToken />
-            <header name="Authorization" expression="fn:concat('Bearer ', get-property('uri.var.accessToken'))"
-               scope="transport" />
-            <powerbi.deleteRows />
-         </then>
-      </filter>
-      <!-- Remove custom Headers from the API Response -->
-      <header name="X-Frame-Options" action="remove" scope="transport" />
-      <header name="Strict-Transport-Security" action="remove" scope="transport" />
-      <header name="RequestId" action="remove" scope="transport" />
-      <header name="X-Content-Type-Options" action="remove" scope="transport" />
-      <header name="OData-Version" action="remove" scope="transport" />
-      <header name="Cache-Control" action="remove" scope="transport" />
-   </sequence>
+    <parameter name="datasetId" description="Guid of the Dataset to use."/>
+    <parameter name="tableName" description="Name of Table in the Dataset."/>
+    <sequence>
+        <property name="uri.var.datasetId" expression="$func:datasetId"/>
+        <property name="uri.var.tableName" expression="$func:tableName"/>
+        <!-- Remove Accept-Encoding header only if it is gzip, to avoid java.io.EOFException. JIRA issue: https://wso2.org/jira/browse/ESBJAVA-2575 -->
+        <filter source="get-property('transport','Accept-Encoding')" regex=".*gzip.*">
+            <then>
+                <header name="Accept-Encoding" action="remove" scope="transport"/>
+            </then>
+        </filter>
+        <call>
+            <endpoint>
+                <http method="delete"
+                      uri-template="{+uri.var.apiUrl}/datasets/{+uri.var.datasetId}/tables/{+uri.var.tableName}/rows"/>
+            </endpoint>
+        </call>
+        <property name="uri.var.statusCode" expression="$axis2:HTTP_SC"/>
+        <!-- If the call fails with 403 Unauthorized, then get a new access token by calling getAccessTokenFromRefreshToken
+           method. -->
+        <filter xpath="get-property('uri.var.statusCode') = 403 and get-property('uri.var.refreshTokenNegotiated') = 'false'">
+            <then>
+                <powerbi.getAccessTokenFromRefreshToken/>
+                <header name="Authorization"
+                        expression="fn:concat('Bearer ', get-property('uri.var.accessToken'))"
+                        scope="transport"/>
+                <powerbi.deleteRows/>
+            </then>
+        </filter>
+        <!-- Remove custom Headers from the API Response -->
+        <header name="X-Frame-Options" action="remove" scope="transport"/>
+        <header name="Strict-Transport-Security" action="remove" scope="transport"/>
+        <header name="RequestId" action="remove" scope="transport"/>
+        <header name="X-Content-Type-Options" action="remove" scope="transport"/>
+        <header name="OData-Version" action="remove" scope="transport"/>
+        <header name="Cache-Control" action="remove" scope="transport"/>
+    </sequence>
 </template>

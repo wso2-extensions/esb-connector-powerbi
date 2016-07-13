@@ -17,22 +17,22 @@
   ~  under the License.
   -->
 <component name="powerbi-row" type="synapse/template">
-   <subComponents>
-      <component name="addRows">
-         <file>addRows.xml</file>
-         <description>Adds Rows to a Table in a specified Dataset.</description>
-      </component>
-      <component name="addGroupRows">
-         <file>addGroupRows.xml</file>
-         <description>Adds Rows to a Table in a specified Dataset and Group.</description>
-      </component>
-      <component name="deleteRows">
-         <file>deleteRows.xml</file>
-         <description>Deletes Rows to a Table in a specified Dataset.</description>
-      </component>
-      <component name="deleteGroupRows">
-         <file>deleteGroupRows.xml</file>
-         <description>Deletes Rows to a Table in a specified Dataset and Group.</description>
-      </component>
-   </subComponents>
+    <subComponents>
+        <component name="addRows">
+            <file>addRows.xml</file>
+            <description>Adds Rows to a Table in a specified Dataset.</description>
+        </component>
+        <component name="addGroupRows">
+            <file>addGroupRows.xml</file>
+            <description>Adds Rows to a Table in a specified Dataset and Group.</description>
+        </component>
+        <component name="deleteRows">
+            <file>deleteRows.xml</file>
+            <description>Deletes Rows to a Table in a specified Dataset.</description>
+        </component>
+        <component name="deleteGroupRows">
+            <file>deleteGroupRows.xml</file>
+            <description>Deletes Rows to a Table in a specified Dataset and Group.</description>
+        </component>
+    </subComponents>
 </component>

@@ -1,5 +1,4 @@
 {
-
-	"apiUrl":"%s(apiUrl)",
-	"resource":"https://analysis.windows.net/powerbi/api"
+  "apiUrl": "%s(apiUrl)",
+  "resource": "https://analysis.windows.net/powerbi/api"
 }

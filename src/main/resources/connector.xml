@@ -17,13 +17,13 @@
   ~  under the License.
   -->
 <connector>
-   <component name="powerbi" package="org.wso2.carbon.connector">
-      <dependency component="powerbi-config" />
-      <dependency component="powerbi-dataset" />
-      <dependency component="powerbi-group" />
-      <dependency component="powerbi-row" />
-      <dependency component="powerbi-table" />
-      <description>WSO2 ESB Connector Library for PowerBI API.</description>
-   </component>
-   <icon>icon/icon-small.gif</icon>
+    <component name="powerbi" package="org.wso2.carbon.connector">
+        <dependency component="powerbi-config"/>
+        <dependency component="powerbi-dataset"/>
+        <dependency component="powerbi-group"/>
+        <dependency component="powerbi-row"/>
+        <dependency component="powerbi-table"/>
+        <description>WSO2 ESB Connector Library for PowerBI API.</description>
+    </component>
+    <icon>icon/icon-small.gif</icon>
 </connector>

@@ -18,16 +18,19 @@
   -->
 <!-- Method Documentation URL: https://msdn.microsoft.com/en-us/library/azure/dn645542.aspx -->
 <template name="getAccessTokenFromRefreshToken" xmlns="http://ws.apache.org/ns/synapse">
-   <parameter name="resource" description="The App ID URI of the web API. Optional." />
-   <sequence>
-      <property name="uri.var.resource" expression="$func:resource" />
-      <property name="uri.var.refreshToken" expression="get-property('registry', 'connectors/PowerBI/refreshToken')" />
-      <property name="uri.var.clientId" expression="get-property('registry', 'connectors/PowerBI/clientId')" />
-      <property name="uri.var.clientSecret" expression="get-property('registry', 'connectors/PowerBI/clientSecret')" />
-      <!-- Type of the grant used to get a new access token by negotiating the refresh token. -->
-      <property name="uri.var.grantType" value="refresh_token" />
-      <script language="js">
-      <![CDATA[
+    <parameter name="resource" description="The App ID URI of the web API. Optional."/>
+    <sequence>
+        <property name="uri.var.resource" expression="$func:resource"/>
+        <property name="uri.var.refreshToken"
+                  expression="get-property('registry', 'connectors/PowerBI/refreshToken')"/>
+        <property name="uri.var.clientId"
+                  expression="get-property('registry', 'connectors/PowerBI/clientId')"/>
+        <property name="uri.var.clientSecret"
+                  expression="get-property('registry', 'connectors/PowerBI/clientSecret')"/>
+        <!-- Type of the grant used to get a new access token by negotiating the refresh token. -->
+        <property name="uri.var.grantType" value="refresh_token"/>
+        <script language="js">
+            <![CDATA[
          var refreshToken = mc.getProperty('uri.var.refreshToken'); 
          var grantType = mc.getProperty('uri.var.grantType');                             
          var clientSecret = mc.getProperty('uri.var.clientSecret'); 
@@ -36,23 +39,24 @@
          var requestQuery = "refresh_token=" + encodeURIComponent(refreshToken) + "&grant_type=" + encodeURIComponent(grantType) 
             + "&client_secret=" + encodeURIComponent(clientSecret) + "&client_id=" + encodeURIComponent(clientId) + "&resource=" 
             + encodeURIComponent(resource);
-         mc.setProperty('uri.var.requestQuery',requestQuery);                                                                           
+         mc.setProperty('uri.var.requestQuery',requestQuery.toString());
       ]]>
-      </script>
-      <property name="uri.var.requestQuery" expression="get-property('uri.var.requestQuery')" />
-      <property name="uri.var.authApiUrl" value="https://login.microsoftonline.com/common/oauth2/token" />
-      <!-- Calling java class to retrieve access token through refresh token. -->
-      <class name="org.wso2.carbon.connector.powerbi.auth.PowerBIAccessTokenGenerator" />
-      <script language="js">
-      <![CDATA[                 
+        </script>
+        <property name="uri.var.requestQuery" expression="get-property('uri.var.requestQuery')"/>
+        <property name="uri.var.authApiUrl"
+                  value="https://login.microsoftonline.com/common/oauth2/token"/>
+        <!-- Calling java class to retrieve access token through refresh token. -->
+        <class name="org.wso2.carbon.connector.powerbi.auth.PowerBIAccessTokenGenerator"/>
+        <script language="js">
+            <![CDATA[
          mc.setPayloadJSON(mc.getProperty('uri.var.resultObject')); 
       ]]>
-      </script>
-      <!-- Setting the new access token to the property. -->
-      <property name="uri.var.accessToken" expression="json-eval($.map.access_token)" />
-      <property name="uri.var.refreshToken" expression="json-eval($.map.refresh_token)" />
-      <script language="js">
-         <![CDATA[
+        </script>
+        <!-- Setting the new access token to the property. -->
+        <property name="uri.var.accessToken" expression="json-eval($.map.access_token)"/>
+        <property name="uri.var.refreshToken" expression="json-eval($.map.refresh_token)"/>
+        <script language="js">
+            <![CDATA[
              importPackage(Packages.org.apache.synapse.config);
              var newAccessToken = mc.getProperty('uri.var.accessToken');
              if(newAccessToken != null && newAccessToken != ''){
@@ -77,18 +81,18 @@
                 }     
              }                          
          ]]>
-      </script>
-      <!-- Boolean flag to keep track of whether the method to get the access token is already called or not. -->
-      <property name="uri.var.refreshTokenNegotiated" value="true" />
-      <!-- Remove custom Headers from the API Response -->
-      <header name="P3P" action="remove" scope="transport" />
-      <header name="Pragma" action="remove" scope="transport" />
-      <header name="Server" action="remove" scope="transport" />
-      <header name="Strict-Transport-Security" action="remove" scope="transport" />
-      <header name="X-Content-Type-Options" action="remove" scope="transport" />
-      <header name="X-Powered-By" action="remove" scope="transport" />
-      <header name="client-request-id" action="remove" scope="transport" />
-      <header name="x-ms-gateway-service-instanceid" action="remove" scope="transport" />
-      <header name="x-ms-request-id" action="remove" scope="transport" />
-   </sequence>
+        </script>
+        <!-- Boolean flag to keep track of whether the method to get the access token is already called or not. -->
+        <property name="uri.var.refreshTokenNegotiated" value="true"/>
+        <!-- Remove custom Headers from the API Response -->
+        <header name="P3P" action="remove" scope="transport"/>
+        <header name="Pragma" action="remove" scope="transport"/>
+        <header name="Server" action="remove" scope="transport"/>
+        <header name="Strict-Transport-Security" action="remove" scope="transport"/>
+        <header name="X-Content-Type-Options" action="remove" scope="transport"/>
+        <header name="X-Powered-By" action="remove" scope="transport"/>
+        <header name="client-request-id" action="remove" scope="transport"/>
+        <header name="x-ms-gateway-service-instanceid" action="remove" scope="transport"/>
+        <header name="x-ms-request-id" action="remove" scope="transport"/>
+    </sequence>
 </template>

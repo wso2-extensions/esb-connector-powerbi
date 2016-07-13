@@ -18,29 +18,30 @@
   -->
 <!-- Method Documentation URL: https://msdn.microsoft.com/en-US/library/mt243842.aspx -->
 <template name="listGroups" xmlns="http://ws.apache.org/ns/synapse">
-   <sequence>
-      <call>
-         <endpoint>
-            <http method="get" uri-template="{+uri.var.apiUrl}/groups" />
-         </endpoint>
-      </call>
-      <property name="uri.var.statusCode" expression="$axis2:HTTP_SC" />
-      <!-- If the call fails with 403 Unauthorized, then get a new access token by calling getAccessTokenFromRefreshToken
-         method. -->
-      <filter xpath="get-property('uri.var.statusCode') = 403 and get-property('uri.var.refreshTokenNegotiated') = 'false'">
-         <then>
-            <powerbi.getAccessTokenFromRefreshToken />
-            <header name="Authorization" expression="fn:concat('Bearer ', get-property('uri.var.accessToken'))"
-               scope="transport" />
-            <powerbi.listGroups />
-         </then>
-      </filter>
-      <!-- Remove custom Headers from the API Response -->
-      <header name="X-Frame-Options" action="remove" scope="transport" />
-      <header name="Strict-Transport-Security" action="remove" scope="transport" />
-      <header name="RequestId" action="remove" scope="transport" />
-      <header name="X-Content-Type-Options" action="remove" scope="transport" />
-      <header name="OData-Version" action="remove" scope="transport" />
-      <header name="Cache-Control" action="remove" scope="transport" />
-   </sequence>
+    <sequence>
+        <call>
+            <endpoint>
+                <http method="get" uri-template="{+uri.var.apiUrl}/groups"/>
+            </endpoint>
+        </call>
+        <property name="uri.var.statusCode" expression="$axis2:HTTP_SC"/>
+        <!-- If the call fails with 403 Unauthorized, then get a new access token by calling getAccessTokenFromRefreshToken
+           method. -->
+        <filter xpath="get-property('uri.var.statusCode') = 403 and get-property('uri.var.refreshTokenNegotiated') = 'false'">
+            <then>
+                <powerbi.getAccessTokenFromRefreshToken/>
+                <header name="Authorization"
+                        expression="fn:concat('Bearer ', get-property('uri.var.accessToken'))"
+                        scope="transport"/>
+                <powerbi.listGroups/>
+            </then>
+        </filter>
+        <!-- Remove custom Headers from the API Response -->
+        <header name="X-Frame-Options" action="remove" scope="transport"/>
+        <header name="Strict-Transport-Security" action="remove" scope="transport"/>
+        <header name="RequestId" action="remove" scope="transport"/>
+        <header name="X-Content-Type-Options" action="remove" scope="transport"/>
+        <header name="OData-Version" action="remove" scope="transport"/>
+        <header name="Cache-Control" action="remove" scope="transport"/>
+    </sequence>
 </template>

@@ -17,25 +17,31 @@
   ~  under the License.
   -->
 <component name="powerbi-dataset" type="synapse/template">
-   <subComponents>
-      <component name="createDataset">
-         <file>createDataset.xml</file>
-         <description>Creates a new Dataset from a JSON schema definition and returns the Dataset ID and the properties
-            of the dataset created.</description>
-      </component>
-      <component name="createGroupDataset">
-         <file>createGroupDataset.xml</file>
-         <description>Creates a new Dataset in a Group from a JSON schema definition and returns theDatasetID and the
-            properties of the dataset created.</description>
-      </component>
-      <component name="listDatasets">
-         <file>listDatasets.xml</file>
-         <description>Returns a JSON list of all Dataset objects which includes a name and id.</description>
-      </component>
-      <component name="listGroupDatasets">
-         <file>listGroupDatasets.xml</file>
-         <description>Returns a JSON list of all Dataset objects in a specified Group which includes a name and id.
-         </description>
-      </component>
-   </subComponents>
+    <subComponents>
+        <component name="createDataset">
+            <file>createDataset.xml</file>
+            <description>Creates a new Dataset from a JSON schema definition and returns the Dataset
+                ID and the properties
+                of the dataset created.
+            </description>
+        </component>
+        <component name="createGroupDataset">
+            <file>createGroupDataset.xml</file>
+            <description>Creates a new Dataset in a Group from a JSON schema definition and returns
+                theDatasetID and the
+                properties of the dataset created.
+            </description>
+        </component>
+        <component name="listDatasets">
+            <file>listDatasets.xml</file>
+            <description>Returns a JSON list of all Dataset objects which includes a name and id.
+            </description>
+        </component>
+        <component name="listGroupDatasets">
+            <file>listGroupDatasets.xml</file>
+            <description>Returns a JSON list of all Dataset objects in a specified Group which
+                includes a name and id.
+            </description>
+        </component>
+    </subComponents>
 </component>
