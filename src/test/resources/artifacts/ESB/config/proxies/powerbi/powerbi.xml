@@ -59,8 +59,7 @@
                         </case>
                         <case regex="urn:createDataset">
                             <powerbi.createDataset>
-                                <defaultRetentionPolicy>{$ctx:defaultRetentionPolicy}
-                                </defaultRetentionPolicy>
+                                <defaultRetentionPolicy>{$ctx:defaultRetentionPolicy}</defaultRetentionPolicy>
                                 <datasetName>{$ctx:datasetName}</datasetName>
                                 <tables>{$ctx:tables}</tables>
                             </powerbi.createDataset>
@@ -68,8 +67,7 @@
                         <case regex="urn:createGroupDataset">
                             <powerbi.createGroupDataset>
                                 <groupId>{$ctx:groupId}</groupId>
-                                <defaultRetentionPolicy>{$ctx:defaultRetentionPolicy}
-                                </defaultRetentionPolicy>
+                                <defaultRetentionPolicy>{$ctx:defaultRetentionPolicy}</defaultRetentionPolicy>
                                 <datasetName>{$ctx:datasetName}</datasetName>
                                 <tables>{$ctx:tables}</tables>
                             </powerbi.createGroupDataset>
