@@ -1,4 +1,6 @@
 {
-  "apiUrl": "%s(apiUrl)",
-  "resource": "https://analysis.windows.net/powerbi/api"
+  "refreshToken":"%s(refreshToken)",
+  "clientSecret":"%s(clientSecret)",
+  "clientId":"%s(clientId)",
+  "resource":"%s(resource)"
 }

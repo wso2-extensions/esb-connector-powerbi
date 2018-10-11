@@ -37,18 +37,6 @@
                       uri-template="{+uri.var.apiUrl}/groups/{+uri.var.groupId}/datasets/{+uri.var.datasetId}/tables/{+uri.var.tableName}/rows"/>
             </endpoint>
         </call>
-        <property name="uri.var.statusCode" expression="$axis2:HTTP_SC"/>
-        <!-- If the call fails with 403 Unauthorized, then get a new access token by calling getAccessTokenFromRefreshToken
-           method. -->
-        <filter xpath="get-property('uri.var.statusCode') = 403 and get-property('uri.var.refreshTokenNegotiated') = 'false'">
-            <then>
-                <powerbi.getAccessTokenFromRefreshToken/>
-                <header name="Authorization"
-                        expression="fn:concat('Bearer ', get-property('uri.var.accessToken'))"
-                        scope="transport"/>
-                <powerbi.deleteGroupRows/>
-            </then>
-        </filter>
         <!-- Remove custom Headers from the API Response -->
         <header name="X-Frame-Options" action="remove" scope="transport"/>
         <header name="Strict-Transport-Security" action="remove" scope="transport"/>

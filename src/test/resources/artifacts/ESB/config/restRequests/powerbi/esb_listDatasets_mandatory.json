@@ -1,3 +1,9 @@
 {
-  "apiUrl": "%s(apiUrl)"
+  "apiUrl":"%s(apiUrl)",
+  "refreshToken":"%s(refreshToken)",
+  "clientSecret":"%s(clientSecret)",
+  "clientId":"%s(clientId)",
+  "resource":"%s(resource)",
+  "registryPath":"%s(registryPath)",
+  "accessToken":"%s(accessToken)"
 }

@@ -19,25 +19,27 @@
 <!-- Method Documentation URL: https://msdn.microsoft.com/en-us/library/azure/dn645542.aspx -->
 <template name="getAccessTokenFromRefreshToken" xmlns="http://ws.apache.org/ns/synapse">
     <parameter name="resource" description="The App ID URI of the web API. Optional."/>
+    <parameter name="refreshToken" description="The value of the refresh token."/>
+    <parameter name="clientSecret"
+               description="The client Secret of the client application that is registered in Azure AD."/>
+    <parameter name="clientId"
+               description="The client ID of the client application that is registered in Azure AD."/>
     <sequence>
         <property name="uri.var.resource" expression="$func:resource"/>
-        <property name="uri.var.refreshToken"
-                  expression="get-property('registry', 'connectors/PowerBI/refreshToken')"/>
-        <property name="uri.var.clientId"
-                  expression="get-property('registry', 'connectors/PowerBI/clientId')"/>
-        <property name="uri.var.clientSecret"
-                  expression="get-property('registry', 'connectors/PowerBI/clientSecret')"/>
+        <property name="uri.var.refreshToken" expression="$func:refreshToken"/>
+        <property name="uri.var.clientId" expression="$func:clientId"/>
+        <property name="uri.var.clientSecret" expression="$func:clientSecret"/>
         <!-- Type of the grant used to get a new access token by negotiating the refresh token. -->
         <property name="uri.var.grantType" value="refresh_token"/>
         <script language="js">
             <![CDATA[
-         var refreshToken = mc.getProperty('uri.var.refreshToken'); 
-         var grantType = mc.getProperty('uri.var.grantType');                             
-         var clientSecret = mc.getProperty('uri.var.clientSecret'); 
-         var clientId = mc.getProperty('uri.var.clientId'); 
-         var resource = mc.getProperty('uri.var.resource'); 
-         var requestQuery = "refresh_token=" + encodeURIComponent(refreshToken) + "&grant_type=" + encodeURIComponent(grantType) 
-            + "&client_secret=" + encodeURIComponent(clientSecret) + "&client_id=" + encodeURIComponent(clientId) + "&resource=" 
+         var refreshToken = mc.getProperty('uri.var.refreshToken');
+         var grantType = mc.getProperty('uri.var.grantType');
+         var clientSecret = mc.getProperty('uri.var.clientSecret');
+         var clientId = mc.getProperty('uri.var.clientId');
+         var resource = mc.getProperty('uri.var.resource');
+         var requestQuery = "refresh_token=" + encodeURIComponent(refreshToken) + "&grant_type=" + encodeURIComponent(grantType)
+            + "&client_secret=" + encodeURIComponent(clientSecret) + "&client_id=" + encodeURIComponent(clientId) + "&resource="
             + encodeURIComponent(resource);
          mc.setProperty('uri.var.requestQuery',requestQuery.toString());
       ]]>
@@ -49,7 +51,7 @@
         <class name="org.wso2.carbon.connector.powerbi.auth.PowerBIAccessTokenGenerator"/>
         <script language="js">
             <![CDATA[
-         mc.setPayloadJSON(mc.getProperty('uri.var.resultObject')); 
+         mc.setPayloadJSON(mc.getProperty('uri.var.resultObject'));
       ]]>
         </script>
         <!-- Setting the new access token to the property. -->
@@ -58,28 +60,31 @@
         <script language="js">
             <![CDATA[
              importPackage(Packages.org.apache.synapse.config);
-             var newAccessToken = mc.getProperty('uri.var.accessToken');
-             if(newAccessToken != null && newAccessToken != ''){
-                var existingAccessToken = mc.getConfiguration().getRegistry().getResource("connectors/PowerBI/accessToken");
-                if(existingAccessToken == null){
-                  // Create the registry entry if no such entry exists.
-                  mc.getConfiguration().getRegistry().newResource("connectors/PowerBI/accessToken", newAccessToken);
-                } else {
-                  // Update the registry entry if it already exists.
-                  mc.getConfiguration().getRegistry().updateResource("connectors/PowerBI/accessToken", newAccessToken);
-                }     
-             } 
+             var newAccessToken = mc.getProperty('powerBI.accessToken');
              var newRefreshToken = mc.getProperty('uri.var.refreshToken');
-             if(newRefreshToken != null && newRefreshToken != ''){
-                var existingRefreshToken = mc.getConfiguration().getRegistry().getResource("connectors/PowerBI/refreshToken");
-                if(existingRefreshToken == null){
-                  // Create the registry entry if no such entry exists.
-                  mc.getConfiguration().getRegistry().newResource("connectors/PowerBI/refreshToken", newRefreshToken);
+             var newSystemTime = mc.getProperty('powerBI.systemTime');
+             var newAccessRegistryPath = mc.getProperty('powerBI.accessTokenRegistryPath');
+             var newRefreshRegistryPath = mc.getProperty('powerBI.refreshTokenRegistryPath');
+             var newTimeRegistryPath = mc.getProperty('powerBI.timeRegistryPath');
+             if(newAccessToken != null && newAccessToken != '' && newRefreshToken != null && newRefreshToken != ''){
+                var existingAccessToken = mc.getConfiguration().getRegistry().getResource(newAccessRegistryPath);
+                var existingRefreshToken = mc.getConfiguration().getRegistry().getResource(newRefreshRegistryPath);
+                var existingTime = mc.getConfiguration().getRegistry().getResource(newTimeRegistryPath);
+                if(existingAccessToken == null && existingRefreshToken == null){
+                  //Create the registry entry if no such entry exists.
+                    mc.getConfiguration().getRegistry().newResource(newAccessRegistryPath, false);
+                    mc.getConfiguration().getRegistry().updateResource(newAccessRegistryPath, newAccessToken);
+                    mc.getConfiguration().getRegistry().newResource(newRefreshRegistryPath, false);
+                    mc.getConfiguration().getRegistry().updateResource(newRefreshRegistryPath, newRefreshToken);
+                    mc.getConfiguration().getRegistry().newResource(newTimeRegistryPath, false);
+                    mc.getConfiguration().getRegistry().updateResource(newTimeRegistryPath, newSystemTime);
                 } else {
                   // Update the registry entry if it already exists.
-                  mc.getConfiguration().getRegistry().updateResource("connectors/PowerBI/refreshToken", newRefreshToken);
-                }     
-             }                          
+                    mc.getConfiguration().getRegistry().updateResource(newAccessRegistryPath, newAccessToken);
+                    mc.getConfiguration().getRegistry().updateResource(newRefreshRegistryPath, newRefreshToken);
+                    mc.getConfiguration().getRegistry().updateResource(newTimeRegistryPath, newSystemTime);
+                }
+             }
          ]]>
         </script>
         <!-- Boolean flag to keep track of whether the method to get the access token is already called or not. -->
