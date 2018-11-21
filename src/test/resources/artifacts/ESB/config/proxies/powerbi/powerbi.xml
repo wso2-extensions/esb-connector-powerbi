@@ -22,9 +22,13 @@
     <target>
         <inSequence>
             <property name="apiUrl" expression="json-eval($.apiUrl)"/>
-            <property name="authorizationCode" expression="json-eval($.authorizationCode)"/>
             <property name="defaultRetentionPolicy"
                       expression="json-eval($.defaultRetentionPolicy)"/>
+            <property name="refreshToken" expression="json-eval($.refreshToken)"/>
+            <property name="accessToken" expression="json-eval($.accessToken)"/>
+            <property name="clientSecret" expression="json-eval($.clientSecret)"/>
+            <property name="clientId" expression="json-eval($.clientId)"/>
+            <property name="registryPath" expression="json-eval($.registryPath)"/>
             <property name="resource" expression="json-eval($.resource)"/>
             <property name="datasetName" expression="json-eval($.datasetName)"/>
             <property name="tables" expression="json-eval($.tables)"/>
@@ -33,110 +37,106 @@
             <property name="tableName" expression="json-eval($.tableName)"/>
             <property name="rows" expression="json-eval($.rows)"/>
             <property name="columns" expression="json-eval($.columns)"/>
+            <powerbi.init>
+                <apiUrl>{$ctx:apiUrl}</apiUrl>
+                <accessToken>{$ctx:accessToken}</accessToken>
+                <refreshToken>{$ctx:refreshToken}</refreshToken>
+                <clientSecret>{$ctx:clientSecret}</clientSecret>
+                <clientId>{$ctx:clientId}</clientId>
+                <resource>{$ctx:resource}</resource>
+                <registryPath>{$ctx:registryPath}</registryPath>
+            </powerbi.init>
             <switch source="get-property('transport','Action')">
-                <case regex="urn:getAccessTokenFromAuthorizationCode">
-                    <powerbi.getAccessTokenFromAuthorizationCode>
-                        <apiUrl>{$ctx:apiUrl}</apiUrl>
-                        <authorizationCode>{$ctx:authorizationCode}</authorizationCode>
-                        <resource>{$ctx:resource}</resource>
-                    </powerbi.getAccessTokenFromAuthorizationCode>
-                </case>
                 <case regex="urn:getAccessTokenFromRefreshToken">
                     <powerbi.getAccessTokenFromRefreshToken>
-                        <apiUrl>{$ctx:apiUrl}</apiUrl>
                         <resource>{$ctx:resource}</resource>
+                        <refreshToken>{$ctx:refreshToken}</refreshToken>
+                        <clientSecret>{$ctx:clientSecret}</clientSecret>
+                        <clientId>{$ctx:clientId}</clientId>
                     </powerbi.getAccessTokenFromRefreshToken>
                 </case>
-                <default>
-                    <powerbi.init>
-                        <apiUrl>{$ctx:apiUrl}</apiUrl>
-                        <accessToken>{$ctx:accessToken}</accessToken>
-                    </powerbi.init>
-                    <switch source="get-property('transport','Action')">
-                        <case regex="urn:listGroups">
-                            <powerbi.listGroups>
-                            </powerbi.listGroups>
-                        </case>
-                        <case regex="urn:createDataset">
-                            <powerbi.createDataset>
-                                <defaultRetentionPolicy>{$ctx:defaultRetentionPolicy}</defaultRetentionPolicy>
-                                <datasetName>{$ctx:datasetName}</datasetName>
-                                <tables>{$ctx:tables}</tables>
-                            </powerbi.createDataset>
-                        </case>
-                        <case regex="urn:createGroupDataset">
-                            <powerbi.createGroupDataset>
-                                <groupId>{$ctx:groupId}</groupId>
-                                <defaultRetentionPolicy>{$ctx:defaultRetentionPolicy}</defaultRetentionPolicy>
-                                <datasetName>{$ctx:datasetName}</datasetName>
-                                <tables>{$ctx:tables}</tables>
-                            </powerbi.createGroupDataset>
-                        </case>
-                        <case regex="urn:listDatasets">
-                            <powerbi.listDatasets>
-                            </powerbi.listDatasets>
-                        </case>
-                        <case regex="urn:listGroupDatasets">
-                            <powerbi.listGroupDatasets>
-                                <groupId>{$ctx:groupId}</groupId>
-                            </powerbi.listGroupDatasets>
-                        </case>
-                        <case regex="urn:listTables">
-                            <powerbi.listTables>
-                                <datasetId>{$ctx:datasetId}</datasetId>
-                            </powerbi.listTables>
-                        </case>
-                        <case regex="urn:listGroupTables">
-                            <powerbi.listGroupTables>
-                                <groupId>{$ctx:groupId}</groupId>
-                                <datasetId>{$ctx:datasetId}</datasetId>
-                            </powerbi.listGroupTables>
-                        </case>
-                        <case regex="urn:addRows">
-                            <powerbi.addRows>
-                                <datasetId>{$ctx:datasetId}</datasetId>
-                                <tableName>{$ctx:tableName}</tableName>
-                                <rows>{$ctx:rows}</rows>
-                            </powerbi.addRows>
-                        </case>
-                        <case regex="urn:addGroupRows">
-                            <powerbi.addGroupRows>
-                                <groupId>{$ctx:groupId}</groupId>
-                                <datasetId>{$ctx:datasetId}</datasetId>
-                                <tableName>{$ctx:tableName}</tableName>
-                                <rows>{$ctx:rows}</rows>
-                            </powerbi.addGroupRows>
-                        </case>
-                        <case regex="urn:deleteRows">
-                            <powerbi.deleteRows>
-                                <datasetId>{$ctx:datasetId}</datasetId>
-                                <tableName>{$ctx:tableName}</tableName>
-                            </powerbi.deleteRows>
-                        </case>
-                        <case regex="urn:deleteGroupRows">
-                            <powerbi.deleteGroupRows>
-                                <groupId>{$ctx:groupId}</groupId>
-                                <datasetId>{$ctx:datasetId}</datasetId>
-                                <tableName>{$ctx:tableName}</tableName>
-                            </powerbi.deleteGroupRows>
-                        </case>
-                        <case regex="urn:updateTableSchema">
-                            <powerbi.updateTableSchema>
-                                <datasetId>{$ctx:datasetId}</datasetId>
-                                <tableName>{$ctx:tableName}</tableName>
-                                <columns>{$ctx:columns}</columns>
-                            </powerbi.updateTableSchema>
-                        </case>
-                        <case regex="urn:updateGroupTableSchema">
-                            <powerbi.updateGroupTableSchema>
-                                <groupId>{$ctx:groupId}</groupId>
-                                <datasetId>{$ctx:datasetId}</datasetId>
-                                <tableName>{$ctx:tableName}</tableName>
-                                <columns>{$ctx:columns}</columns>
-                            </powerbi.updateGroupTableSchema>
-                        </case>
-                    </switch>
-                </default>
+                <case regex="urn:listGroups">
+                    <powerbi.listGroups>
+                    </powerbi.listGroups>
+                </case>
+                <case regex="urn:createDataset">
+                    <powerbi.createDataset>
+                        <defaultRetentionPolicy>{$ctx:defaultRetentionPolicy}</defaultRetentionPolicy>
+                        <datasetName>{$ctx:datasetName}</datasetName>
+                        <tables>{$ctx:tables}</tables>
+                    </powerbi.createDataset>
+                </case>
+                <case regex="urn:createGroupDataset">
+                    <powerbi.createGroupDataset>
+                        <groupId>{$ctx:groupId}</groupId>
+                        <defaultRetentionPolicy>{$ctx:defaultRetentionPolicy}</defaultRetentionPolicy>
+                        <datasetName>{$ctx:datasetName}</datasetName>
+                        <tables>{$ctx:tables}</tables>
+                    </powerbi.createGroupDataset>
+                </case>
+                <case regex="urn:listDatasets">
+                    <powerbi.listDatasets>
+                    </powerbi.listDatasets>
+                </case>
+                <case regex="urn:listGroupDatasets">
+                    <powerbi.listGroupDatasets>
+                        <groupId>{$ctx:groupId}</groupId>
+                    </powerbi.listGroupDatasets>
+                </case>
+                <case regex="urn:listTables">
+                    <powerbi.listTables>
+                        <datasetId>{$ctx:datasetId}</datasetId>
+                    </powerbi.listTables>
+                </case>
+                <case regex="urn:listGroupTables">
+                    <powerbi.listGroupTables>
+                        <groupId>{$ctx:groupId}</groupId>
+                        <datasetId>{$ctx:datasetId}</datasetId>
+                    </powerbi.listGroupTables>
+                </case>
+                <case regex="urn:addRows">
+                    <powerbi.addRows>
+                        <datasetId>{$ctx:datasetId}</datasetId>
+                        <tableName>{$ctx:tableName}</tableName>
+                        <rows>{$ctx:rows}</rows>
+                    </powerbi.addRows>
+                </case>
+                <case regex="urn:addGroupRows">
+                    <powerbi.addGroupRows>
+                        <groupId>{$ctx:groupId}</groupId>
+                        <datasetId>{$ctx:datasetId}</datasetId>
+                        <tableName>{$ctx:tableName}</tableName>
+                        <rows>{$ctx:rows}</rows>
+                    </powerbi.addGroupRows>
+                </case>
+                <case regex="urn:deleteRows">
+                    <powerbi.deleteRows>
+                        <datasetId>{$ctx:datasetId}</datasetId>
+                        <tableName>{$ctx:tableName}</tableName>
+                    </powerbi.deleteRows>
+                </case>
+                <case regex="urn:deleteGroupRows">
+                    <powerbi.deleteGroupRows>
+                        <groupId>{$ctx:groupId}</groupId>
+                        <datasetId>{$ctx:datasetId}</datasetId>
+                        <tableName>{$ctx:tableName}</tableName>
+                    </powerbi.deleteGroupRows>
+                </case>
+                <case regex="urn:updateTableSchema">
+                    <powerbi.updateTableSchema>
+                        <datasetId>{$ctx:datasetId}</datasetId>
+                        <tableName>{$ctx:tableName}</tableName>
+                        <columns>{$ctx:columns}</columns>
+                    </powerbi.updateTableSchema>
+                </case>
+                <case regex="urn:updateGroupTableSchema">
+                    <powerbi.updateGroupTableSchema>
+                        <groupId>{$ctx:groupId}</groupId>
+                        <datasetId>{$ctx:datasetId}</datasetId>
+                        <tableName>{$ctx:tableName}</tableName>
+                        <columns>{$ctx:columns}</columns>
+                    </powerbi.updateGroupTableSchema>
+                </case>
             </switch>
             <respond/>
         </inSequence>

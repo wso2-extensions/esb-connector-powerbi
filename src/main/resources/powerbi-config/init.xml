@@ -16,43 +16,118 @@
   ~  specific language governing permissions and limitations
   ~  under the License.
   -->
-<!-- Method Documentation URL: https://msdn.microsoft.com/en-us/library/azure/dn645542.aspx -->
+ <!--Method Documentation URL: https://msdn.microsoft.com/en-us/library/azure/dn645542.aspx -->
 <template name="init" xmlns="http://ws.apache.org/ns/synapse">
     <parameter name="apiUrl" description="Base endpoint URL of PowerBI API."/>
     <parameter name="accessToken"
                description="OAuth Token to read and manipulate data of PowerBI API"/>
+    <parameter name="refreshToken" description="The value of the refresh token."/>
+    <parameter name="clientSecret"
+               description="The client secret of the client application that is registered in Azure AD."/>
+    <parameter name="clientId"
+               description="The client ID of the client application that is registered in Azure AD."/>
+    <parameter name="resource"
+               description="The App ID URI of the web API (Optional)."/>
+    <parameter name="registryPath"
+               description="Registry Path of the Connector where the values are stored."/>
     <sequence>
+        <property name="powerBI.accessToken" expression="$func:accessToken"/>
         <property name="uri.var.apiUrl" expression="$func:apiUrl"/>
-        <property name="uri.var.accessToken" expression="$func:accessToken"/>
-        <!-- Boolean flag to keep track of whether the getAccessToken method is already called or not. -->
-        <property name="uri.var.refreshTokenNegotiated" value="false"/>
-        <filter source="boolean(get-property('uri.var.apiUrl'))" regex="true">
+        <property name="powerBI.refreshToken" expression="$func:refreshToken"/>
+        <property name="powerBI.clientSecret" expression="$func:clientSecret"/>
+        <property name="powerBI.clientId" expression="$func:clientId"/>
+        <property name="powerBI.resource" expression="$func:resource"/>
+        <property name="powerBI.registryPath" expression="$func:registryPath"/>
+        <property name="powerBI.intervalTime" value="3000000"/>
+
+        <filter source="boolean($ctx:uri.var.apiUrl)" regex="true">
             <then>
                 <property name="uri.var.apiUrl"
                           expression="fn:concat(get-property('uri.var.apiUrl'), '/v1.0/myorg')"/>
             </then>
-            <else>
-                <property name="uri.var.apiUrl"
-                          expression="fn:concat(get-property('registry', 'connectors/PowerBI/apiUrl'), '/v1.0/myorg')"/>
-            </else>
         </filter>
-        <!-- If the access token is not sent with the request, then get it from the registry. -->
-        <filter source="boolean(get-property('uri.var.accessToken'))" regex="false">
+
+        <filter source="boolean($ctx:powerBI.refreshToken) and boolean($ctx:powerBI.clientSecret) and
+         boolean($ctx:powerBI.clientId) and boolean($ctx:powerBI.accessToken)" regex="true">
             <then>
-                <property name="uri.var.accessToken"
-                          expression="get-property('registry', 'connectors/PowerBI/accessToken')"/>
-                <!-- If the access token is not in the registry, then get a new access token by calling getAccessTokenFromRefreshToken
-                   method. -->
-                <filter
-                        xpath="not(boolean(get-property('uri.var.accessToken'))) and get-property('uri.var.refreshTokenNegotiated') = 'false'">
+                <filter source="boolean($ctx:powerBI.registryPath)" regex="false">
+                    <then>
+                        <property name="powerBI.accessTokenRegistryPath"
+                                  value="connectors/PowerBI/accessToken"/>
+                        <property name="powerBI.refreshTokenRegistryPath"
+                                  value="connectors/PowerBI/refreshToken"/>
+                        <property name="powerBI.timeRegistryPath"
+                                  value="connectors/PowerBI/time"/>
+                    </then>
+                    <else>
+                        <property name="powerBI.accessTokenRegistryPath"
+                                  expression="fn:concat($ctx:powerBI.registryPath, '/accessToken' )"/>
+                        <property name="powerBI.refreshTokenRegistryPath"
+                                  expression="fn:concat($ctx:powerBI.registryPath, '/refreshToken' )"/>
+                        <property name="powerBI.timeRegistryPath"
+                                  expression="fn:concat($ctx:powerBI.registryPath, '/time' )"/>
+                    </else>
+                </filter>
+                <property name="powerBI.accessTokenFromRegistry"
+                          expression="get-property('registry', $ctx:powerBI.accessTokenRegistryPath)"/>
+                <property name="powerBI.refreshTokenFromRegistry"
+                          expression="get-property('registry', $ctx:powerBI.refreshTokenRegistryPath)"/>
+                <property name="powerBI.systemTime" expression="get-property('SYSTEM_TIME')" scope="default"/>
+
+                <filter source="$ctx:powerBI.accessTokenFromRegistry='' and
+                $ctx:powerBI.refreshTokenFromRegistry=''" regex="false">
+                    <then>
+                        <property name="powerBI.accessToken"
+                                  expression="$ctx:powerBI.accessTokenFromRegistry"/>
+                        <property name="powerBI.refreshToken"
+                                  expression="$ctx:powerBI.refreshTokenFromRegistry"/>
+                    </then>
+                </filter>
+                <filter source="$ctx:powerBI.accessTokenFromRegistry=''" regex="true">
+                    <then>
+                        <script language="js">
+                            <![CDATA[
+                           importPackage(Packages.org.apache.synapse.config);
+                           var newAccess = mc.getProperty('powerBI.accessToken');
+                           var newRefresh = mc.getProperty('powerBI.refreshToken');
+                           var newAccessRegistryPath = mc.getProperty('powerBI.accessTokenRegistryPath');
+                           var newRefreshRegistryPath = mc.getProperty('powerBI.refreshTokenRegistryPath');
+                           var newSysTime = mc.getProperty('powerBI.systemTime');
+                           var newTimeRegistryPath = mc.getProperty('powerBI.timeRegistryPath');
+                           if(newAccess != null && newAccess != '' && newRefresh != null && newRefresh != '' ){
+                               //Create the registry entry if no such entry exists.
+                               mc.getConfiguration().getRegistry().newResource(newAccessRegistryPath,false);
+                               mc.getConfiguration().getRegistry().updateResource(newAccessRegistryPath,newAccess);
+                               mc.getConfiguration().getRegistry().newResource(newRefreshRegistryPath,false);
+                               mc.getConfiguration().getRegistry().updateResource(newRefreshRegistryPath,newRefresh);
+                               mc.getConfiguration().getRegistry().newResource(newTimeRegistryPath, false);
+                               mc.getConfiguration().getRegistry().updateResource(newTimeRegistryPath, newSysTime);
+                           }
+                           ]]>
+                        </script>
+                    </then>
+                </filter>
+                <property name="powerBI.registryTime"
+                          expression="get-property('registry', $ctx:powerBI.timeRegistryPath)"/>
+                <script language="js"><![CDATA[
+                    var currentTime = mc.getProperty("powerBI.systemTime");
+                    var updatedTimeInRegistry= mc.getProperty("powerBI.registryTime");
+                    var intervalTime = currentTime - updatedTimeInRegistry;
+                    mc.setProperty("powerBI.INTERVAL_TIME", intervalTime);
+                   ]]>
+                </script>
+                <!--If the access token is not in the registry(first call) or time interval less than 50 minutes ,
+                 then get a new access token by calling getAccessTokenFromRefreshToken method and store the time into
+                 registry-->
+                <filter source="$ctx:powerBI.INTERVAL_TIME &gt;$ctx:powerBI.intervalTime or
+                $ctx:powerBI.accessToken=''" regex="true">
                     <then>
                         <powerbi.getAccessTokenFromRefreshToken/>
                     </then>
                 </filter>
             </then>
         </filter>
-        <header name="Authorization"
-                expression="fn:concat('Bearer ', get-property('uri.var.accessToken'))"
+        <header name="Authorization" expression="fn:concat('Bearer ', $ctx:powerBI.accessToken )"
                 scope="transport"/>
     </sequence>
 </template>

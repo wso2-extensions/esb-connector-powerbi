@@ -44,60 +44,29 @@ public class PowerbiConnectorIntegrationTest extends ConnectorIntegrationTestBas
      */
     @BeforeClass(alwaysRun = true)
     public void setEnvironment() throws Exception {
+
         String connectorName = System.getProperty("connector_name") + "-connector-" +
                 System.getProperty("connector_version") + ".zip";
         init(connectorName);
+        getApiConfigProperties();
         esbRequestHeadersMap.put("Accept-Charset", "UTF-8");
         esbRequestHeadersMap.put("Content-Type", "application/json");
 
         apiUrl = connectorProperties.getProperty("apiUrl") + "/v1.0/myorg";
 
         apiRequestHeadersMap.putAll(esbRequestHeadersMap);
-
+        getAccessToken();
+        String accessToken = connectorProperties.getProperty("accessToken");
+        apiRequestHeadersMap.put("Authorization", "Bearer " + accessToken);
     }
 
-    /**
-     * Positive test case for getAccessTokenFromAuthorizationCode method with
-     * mandatory parameters.
-     *
-     * @throws JSONException
-     * @throws IOException
-     */
-    @Test(groups = {"wso2.esb"}, description = "Power BI {getAccessTokenFromAuthorizationCode} integration test with mandatory parameters.")
-    public void testGetAccessTokenFromAuthorizationCode() throws IOException, JSONException {
-
-        esbRequestHeadersMap.put("Action", "urn:getAccessTokenFromAuthorizationCode");
-        RestResponse<JSONObject> esbRestResponse = sendJsonRestRequest(proxyUrl, "POST", esbRequestHeadersMap,
-                "esb_getAccessTokenFromAuthorizationCode_m.json");
-
-        Assert.assertEquals(esbRestResponse.getHttpStatusCode(), 200);
-        Assert.assertNotNull(esbRestResponse.getBody().getJSONObject("map").getString("token_type"));
-        Assert.assertNotNull(esbRestResponse.getBody().getJSONObject("map").getString("access_token"));
-
-    }
-
-    /**
-     * Positive test case for getAccessTokenFromRefreshToken method with
-     * mandatory parameters.
-     *
-     * @throws JSONException
-     * @throws IOException
-     */
-    @Test(groups = {"wso2.esb"}, dependsOnMethods = {"testGetAccessTokenFromAuthorizationCode"}, description = "Power BI {getAccessTokenFromRefreshToken} integration test with mandatory parameters.")
-    public void testGetAccessTokenFromRefreshToken() throws IOException, JSONException {
+    private void getAccessToken() throws IOException, JSONException {
 
         esbRequestHeadersMap.put("Action", "urn:getAccessTokenFromRefreshToken");
         RestResponse<JSONObject> esbRestResponse = sendJsonRestRequest(proxyUrl, "POST", esbRequestHeadersMap,
                 "esb_getAccessTokenFromRefreshToken_m.json");
-
-        final String accessToken = esbRestResponse.getBody().getJSONObject("map").getString("access_token");
+        String accessToken = esbRestResponse.getBody().getJSONObject("map").getString("access_token");
         connectorProperties.put("accessToken", accessToken);
-        apiRequestHeadersMap.put("Authorization", "Bearer " + accessToken);
-
-        Assert.assertEquals(esbRestResponse.getHttpStatusCode(), 200);
-        Assert.assertNotNull(esbRestResponse.getBody().getJSONObject("map").getString("token_type"));
-        Assert.assertNotNull(esbRestResponse.getBody().getJSONObject("map").getString("access_token"));
-
     }
 
     /**
@@ -106,14 +75,15 @@ public class PowerbiConnectorIntegrationTest extends ConnectorIntegrationTestBas
      * @throws JSONException
      * @throws IOException
      */
-    @Test(groups = {"wso2.esb"}, dependsOnMethods = {"testGetAccessTokenFromRefreshToken"}, description = "Power BI {listGroups} integration test with mandatory parameters.")
+    @Test(groups = {"wso2.esb"}, description = "Power BI {listGroups} integration test with mandatory parameters.")
     public void testListGroupsWithMandatoryParameters() throws IOException, JSONException {
 
         esbRequestHeadersMap.put("Action", "urn:listGroups");
+        final String apiEndpoint = apiUrl + "/groups";
+        RestResponse<JSONObject> createGroupRestResponse = sendJsonRestRequest(apiEndpoint, "POST",
+                apiRequestHeadersMap, "api_create_group.json");
         RestResponse<JSONObject> esbRestResponse = sendJsonRestRequest(proxyUrl, "POST", esbRequestHeadersMap,
                 "esb_listGroups_mandatory.json");
-
-        final String apiEndpoint = apiUrl + "/groups";
         RestResponse<JSONObject> apiRestResponse = sendJsonRestRequest(apiEndpoint, "GET", apiRequestHeadersMap);
 
         Assert.assertEquals(esbRestResponse.getBody().getJSONArray("value").length(), apiRestResponse.getBody()
@@ -143,14 +113,13 @@ public class PowerbiConnectorIntegrationTest extends ConnectorIntegrationTestBas
      * @throws JSONException
      * @throws IOException
      */
-    @Test(groups = {"wso2.esb"}, dependsOnMethods = {"testGetAccessTokenFromRefreshToken"}, description = "Power BI {createDataset} integration test with mandatory parameters.")
+    @Test(groups = {"wso2.esb"}, description = "Power BI {createDataset} integration test with mandatory parameters.")
     public void testCreateDatasetWithMandatoryParameters() throws IOException, JSONException {
 
         esbRequestHeadersMap.put("Action", "urn:createDataset");
         final String retentionPolicyDefaultValue = "None";
         RestResponse<JSONObject> esbRestResponse = sendJsonRestRequest(proxyUrl, "POST", esbRequestHeadersMap,
                 "esb_createDataset_mandatory.json");
-
         Assert.assertEquals(esbRestResponse.getHttpStatusCode(), 201);
         String datasetId = esbRestResponse.getBody().getString("id");
         String defaultRetentionPolicy = esbRestResponse.getBody().getString("defaultRetentionPolicy");
@@ -159,6 +128,7 @@ public class PowerbiConnectorIntegrationTest extends ConnectorIntegrationTestBas
         connectorProperties.put("datasetId", datasetId);
         final String apiEndpoint = apiUrl + "/datasets";
         RestResponse<JSONObject> apiRestResponse = sendJsonRestRequest(apiEndpoint, "GET", apiRequestHeadersMap);
+
         JSONArray apiDatasets = apiRestResponse.getBody().getJSONArray("value");
 
         JSONObject dataset = null;
@@ -180,7 +150,7 @@ public class PowerbiConnectorIntegrationTest extends ConnectorIntegrationTestBas
      * @throws JSONException
      * @throws IOException
      */
-    @Test(groups = {"wso2.esb"}, dependsOnMethods = {"testGetAccessTokenFromRefreshToken"}, description = "Power BI {createDataset} integration test with mandatory parameters.")
+    @Test(groups = {"wso2.esb"}, description = "Power BI {createDataset} integration test with mandatory parameters.")
     public void testCreateDatasetWithOptionalParameters() throws IOException, JSONException {
 
         esbRequestHeadersMap.put("Action", "urn:createDataset");
@@ -218,26 +188,21 @@ public class PowerbiConnectorIntegrationTest extends ConnectorIntegrationTestBas
      * @throws JSONException
      * @throws IOException
      */
-    @Test(groups = {"wso2.esb"}, dependsOnMethods = {"testGetAccessTokenFromRefreshToken"}, description = "Power BI {createDataset} integration test with negative case.")
+    @Test(groups = {"wso2.esb"}, description = "Power BI {createDataset} integration test with negative case.")
     public void testCreateDatasetWithNegativeCase() throws IOException, JSONException {
 
         esbRequestHeadersMap.put("Action", "urn:createDataset");
         RestResponse<JSONObject> esbRestResponse = sendJsonRestRequest(proxyUrl, "POST", esbRequestHeadersMap,
                 "esb_createDataset_negative.json");
-
         final String apiEndpoint = apiUrl + "/datasets";
         RestResponse<JSONObject> apiRestResponse = sendJsonRestRequest(apiEndpoint, "POST", apiRequestHeadersMap,
                 "api_createDataset_negative.json");
-
         Assert.assertEquals(esbRestResponse.getHttpStatusCode(), apiRestResponse.getHttpStatusCode());
         Assert.assertEquals(esbRestResponse.getBody().getJSONObject("error").getString("code"), apiRestResponse.getBody()
                 .getJSONObject("error").getString("code"));
         Assert.assertEquals(esbRestResponse.getBody().getJSONObject("error").getJSONArray("details").getJSONObject(0)
                 .getString("message"), apiRestResponse.getBody().getJSONObject("error").getJSONArray("details")
                 .getJSONObject(0).getString("message"));
-        Assert.assertEquals(esbRestResponse.getBody().getJSONObject("error").getJSONArray("details").getJSONObject(0)
-                .getString("target"), apiRestResponse.getBody().getJSONObject("error").getJSONArray("details")
-                .getJSONObject(0).getString("target"));
 
     }
 
@@ -564,9 +529,6 @@ public class PowerbiConnectorIntegrationTest extends ConnectorIntegrationTestBas
         Assert.assertEquals(esbRestResponse.getBody().getJSONObject("error").getJSONArray("details").getJSONObject(0)
                 .getString("message"), apiRestResponse.getBody().getJSONObject("error").getJSONArray("details")
                 .getJSONObject(0).getString("message"));
-        Assert.assertEquals(esbRestResponse.getBody().getJSONObject("error").getJSONArray("details").getJSONObject(0)
-                .getString("target"), apiRestResponse.getBody().getJSONObject("error").getJSONArray("details")
-                .getJSONObject(0).getString("target"));
 
     }
 
