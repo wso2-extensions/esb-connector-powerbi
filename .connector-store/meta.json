@@ -8,5 +8,13 @@
     "labels": [
         "DevTools"
     ],
-    "releases": []
+    "releases": [
+        {
+            "tagName": "1.0.1",
+            "products": [
+                "ESB 4.9.0",
+                "EI 6.1.1"
+            ]
+        }
+    ]
 }
